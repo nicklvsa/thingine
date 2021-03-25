@@ -1,7 +1,8 @@
+import { EventSub } from './events';
 import { StateDef, StateMethod, ThingineState } from './models';
 
 export class Interpolator {
-    private interCheck = (check: string) => {
+    private interCheck (check: string) {
         return `{{([^}]*(\\s*${check}\\s*))}}`;
     }
 
@@ -44,17 +45,30 @@ export class Interpolator {
         });
     }
 
-    public registerLogic(elem: Element, methods: StateMethod<any, any>, defs: StateDef<any>) {
-        Object.keys(defs).forEach((key, _) => {
-            elem.childNodes.forEach((node, i) => {
+    public registerLogic(elem: Element, defs: StateDef<any>, events: EventSub) {
+        Object.keys(defs).forEach((key, i) => {
+            elem.childNodes.forEach((node, j) => {
                 if (node instanceof Element) {
-                    const n = (elem.childNodes[i] as Element);
+                    const n = (elem.childNodes[j] as Element);                 
                     n.getAttributeNames().forEach((attr) => {
                         if (attr.startsWith('%')) {
                             const action = attr.substring(1);
                             switch (action) {
                                 case 'if':
                                     // TODO: handle ifs
+                                    break;
+                                case 'bind':
+                                    const bind = n.getAttribute(attr);
+                                    const input = (n as HTMLInputElement & {
+                                        value: any,
+                                    });
+
+                                    input.addEventListener('keyup', (evt) => {
+                                        events.emit(`@set:${bind}`, {
+                                            id: input.getAttribute('thingineid'),
+                                            value: input.value,
+                                        });
+                                    });
                                     break;
                                 default:
                                     break;

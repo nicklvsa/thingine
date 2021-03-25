@@ -7,6 +7,7 @@
 </head>
 <body>
     <div id="app">
+        <input type="text" %bind="example">
         <p>hello</p>
         <p>world</p>
         <p>{{ example }}</p>
@@ -36,7 +37,11 @@
             store.defs.count++;
         });
 
-        app.publisher.subscribe('@update:count', (i, data) => {
+        app.publisher.subscribe('@update:example', (s, data) => {
+            console.log(data);
+        });
+
+        app.publisher.subscribe('@update:count', (s, data) => {
             console.log(data);
         });
 

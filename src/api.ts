@@ -21,11 +21,26 @@ export class Thingine {
             return;
         }
 
+        selected.childNodes.forEach((n, i) => {
+            if (n instanceof Element) {
+                const find = (n as Element);
+                
+                if (!find.hasAttribute('thingineid')) {
+                    (selected.childNodes[i] as Element).setAttribute('thingineid', this.genID());
+                }
+            }
+        });
+
         this.doc = selected.innerHTML;
         this.selector = selected;
         this.state = state;
 
         this.events.setState = this.state;
+    }
+
+    private genID(): string {
+        const id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase();
+        return id;
     }
 
     private err(err: any) {
@@ -40,7 +55,7 @@ export class Thingine {
 
         this.interpolator.findAndReplace(this.selector, defs);
         this.interpolator.registerActions(this.selector, state);
-        this.interpolator.registerLogic(this.selector, state, defs);
+        this.interpolator.registerLogic(this.selector, defs, this.events);
     }
 
     public get publisher(): EventSub {
@@ -68,6 +83,15 @@ export class Thingine {
                     oldStore[key] = val;
                     this.rerender(oldStore, this.state.methods, this.doc);
                 }
+            });
+
+            this.events.subscribe(`@set:${key}`, (_, val) => {
+                this.events.emit(`@update:${key}`, {
+                    old_value: oldStore[key],
+                    new_value: val.value, 
+                });
+
+                oldStore[key] = val.value;
             });
         });
     }
