@@ -1,0 +1,21 @@
+{
+  "name": "Thingine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "clean": "rm -rf _bundles lib lib-esm",
+    "build": "webpack",
+    "final": "tsc && tsc -m es6 --outDir lib-esm && npx webpack",
+    "cleanbuild": "npm run clean && npm run final",
+    "watch": "npm run clean && tsc && tsc -m es6 --outDir lib-esm && npx webpack -w"
+  },
+  "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "ts-loader": "^8.0.18",
+    "typescript": "^3.9.9",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12"
+  }
+}

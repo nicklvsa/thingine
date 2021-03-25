@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <p>hello</p>
+        <p>world</p>
+        <p>{{ example }}</p>
+        <button @click="testmethod">Count: {{ count }}</button>
+    </div>
+
+    <script type="text/javascript" src="./_bundles/thingine.min.js"></script>
+
+    <script>
+        const store = {
+            defs: {
+                example: 'testing',
+                count: 0,
+            },
+            methods: {
+                testmethod: () => {
+                    app.publisher.emit('increment', null);
+                },
+            }
+        };
+
+        const app = new Thingine.Thingine(
+            '#app', store,
+        );
+
+        app.publisher.subscribe('increment', () => {
+            store.defs.count++;
+        });
+
+        app.publisher.subscribe('@update:count', (i, data) => {
+            console.log(data);
+        });
+
+        app.render();
+    </script>
+</body>
+</html>
