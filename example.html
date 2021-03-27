@@ -10,7 +10,7 @@
         <input type="text" %bind="example">
         <p>hello</p>
         <p>world</p>
-        <p>{{ example }}</p>
+        <p>{{ another.a }}</p>
         <button @click="testmethod">Count: {{ count }}</button>
     </div>
 
@@ -20,11 +20,14 @@
         const store = {
             defs: {
                 example: 'testing',
+                another: {
+                    a: 'a values',
+                },
                 count: 0,
             },
             methods: {
                 testmethod: () => {
-                    app.publisher.emit('increment', null);
+                    store.defs.count++;
                 },
             }
         };
@@ -32,14 +35,6 @@
         const app = new Thingine.Thingine(
             '#app', store,
         );
-
-        app.publisher.subscribe('increment', () => {
-            store.defs.count++;
-        });
-
-        app.publisher.subscribe('@update:example', (s, data) => {
-            console.log(data);
-        });
 
         app.publisher.subscribe('@update:count', (s, data) => {
             console.log(data);

@@ -6,18 +6,44 @@ export class Interpolator {
         return `{{([^}]*(\\s*${check}\\s*))}}`;
     }
 
-    private isInterpolatedValue(key: string, check: string): boolean {
-        const checker = new RegExp(this.interCheck(key.trim()), 'g');
-        return checker.test(check.trim());
+    private flattenObject(obj: any, prefix: string = '') {
+        return Object.keys(obj).reduce((acc, k) => {
+            const pre = prefix.length ? `${prefix}.` : '';
+            if (typeof obj[k] === 'object' && obj[k] !== null && Object.keys(obj[k]).length > 0) {
+                Object.assign(acc, this.flattenObject(obj[k], pre + k));
+            } else {
+                acc[pre + k] = obj[k];
+            }
+
+            return acc;
+        }, {});
     }
 
-    private replaceInterpolatedValue(key: string, check: string, replacement: string): string {
-       if (this.isInterpolatedValue(key, check)) {
-            const checker = new RegExp(this.interCheck(key.trim()), 'g');
-            return check.replace(checker, replacement);
+    private isInterpolatedValue(key: any, check: string): boolean {
+        const checker = new RegExp(this.interCheck(key.trim()), 'g');
+        return checker.test(check);
+    }
+
+    private replaceInterpolatedValue(key: string, check: string, replacement: any): string {
+        let toReplace = check;
+
+        if (typeof replacement === 'object') {
+            const flat = this.flattenObject(replacement, key);
+            Object.keys(flat).forEach((k, _) => {
+                if (this.isInterpolatedValue(k, check)) {
+                    const newKey = k.replace('.', '\\.');
+                    const checker = new RegExp(this.interCheck(newKey.trim()), 'g');
+                    toReplace = toReplace.replace(checker, flat[k]);
+                }
+            });
         }
 
-        return check;
+        if (this.isInterpolatedValue(key, check)) {
+            const checker = new RegExp(this.interCheck(key.trim()), 'g');
+            toReplace = toReplace.replace(checker, replacement);
+        }
+
+        return toReplace;
     }
 
     public findAndReplace(elem: Element, defs: StateDef<any>) {
