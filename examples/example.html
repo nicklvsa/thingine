@@ -10,11 +10,12 @@
         <input type="text" %bind="example">
         <p>hello</p>
         <p>world</p>
-        <p>{{ another.a }}</p>
+        <p>{{ another.things.1 }}</p>
+        <p>{{ example }}</p>
         <button @click="testmethod">Count: {{ count }}</button>
     </div>
 
-    <script type="text/javascript" src="./_bundles/thingine.min.js"></script>
+    <script type="text/javascript" src="../_bundles/thingine.min.js"></script>
 
     <script>
         const store = {
@@ -22,6 +23,11 @@
                 example: 'testing',
                 another: {
                     a: 'a values',
+                    things: [
+                        'Thing 0',
+                        'Thing 1',
+                        'Thing 2',
+                    ],
                 },
                 count: 0,
             },
@@ -37,6 +43,10 @@
         );
 
         app.publisher.subscribe('@update:count', (s, data) => {
+            console.log(data);
+        });
+
+        app.publisher.subscribe('@update:example', (s, data) => {
             console.log(data);
         });
 

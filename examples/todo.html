@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .todo-list-items {
+            border: 1px solid black;
+            height: 50%;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="center">
+        <h1>{{ title }}</h1>
+        <div class="todo-list-items">
+            <div %for="todos" %as="todo">
+                <button @click="closeTodo" args="{{todo}}">Close {{ todo }}</button>
+            </div>
+        </div>
+        <button @click="addRandomNum">Add Random Number</button>
+    </div>
+
+    <script type="text/javascript" src="../_bundles/thingine.min.js"></script>
+
+    <script>
+        const store = {
+            defs: {
+                title: 'Todo List',
+                todos: ['a', 'b'],
+            },
+            methods: {
+                addRandomNum: () => {
+                    const rand = Math.floor(Math.random() * 100) + 1;
+                    store.defs.todos.push(rand);
+                },
+                closeTodo: (val) => {
+                    alert(val);
+                },
+            }
+        };
+
+        const app = new Thingine.Thingine(
+            '#app', store,
+        );
+
+        app.render();
+    </script>
+</body>
+</html>
